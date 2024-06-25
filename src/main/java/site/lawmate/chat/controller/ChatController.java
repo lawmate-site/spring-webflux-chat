@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
+import site.lawmate.chat.domain.Chat;
 import site.lawmate.chat.domain.ChatDto;
 import site.lawmate.chat.service.ChatService;
 
@@ -17,16 +19,16 @@ public class ChatController {
 
     @PostMapping("/temp")
     @ResponseStatus(HttpStatus.OK)
-    public String temp(@RequestParam String tempQuestion){
-        log.info("질문받은 메세지 : {}", tempQuestion);
-        return "안녕하세요?";
+    public Mono<String> temp(@RequestBody Mono<String> tempQuestion){
+        return tempQuestion.doOnNext(question -> log.info("질문받은 메세지 : {}", question))
+                .map(question -> "안녕하세요?");
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public Object save(@RequestBody ChatDto chatDto){
-        log.info("컨트롤러단 save : {}", chatDto.getAnswer());
-        return chatService.save(chatDto);
+    public Mono<Chat> save(@RequestBody Mono<ChatDto> chatDtoMono){
+        return chatDtoMono.doOnNext(chatDto -> log.info("컨트롤러단 save : {}", chatDto.getAnswer()))
+                .flatMap(chatService::save);
     }
 
     @GetMapping("/{id}")

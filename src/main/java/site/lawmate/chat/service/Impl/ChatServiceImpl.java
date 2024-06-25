@@ -2,6 +2,7 @@ package site.lawmate.chat.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import site.lawmate.chat.domain.Chat;
 import site.lawmate.chat.domain.ChatDto;
 import site.lawmate.chat.repository.ChatRepository;
@@ -14,8 +15,16 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
 
     @Override
-    public Object save(ChatDto chatDto) {
-        return chatRepository.save(new Chat(chatDto.getUserId(),chatDto.getChatId(),chatDto.getIndex(),chatDto.getQuestion(), chatDto.getAnswer()));
+    public Mono<Chat> save(ChatDto chatDto) {
+        Chat chat = Chat.builder()
+                .userId(chatDto.getUserId())
+                .chatId(chatDto.getChatId())
+                .index(chatDto.getIndex())
+                .timeStamp(chatDto.getTimeStamp())
+                .question(chatDto.getQuestion())
+                .answer(chatDto.getAnswer())
+                .build();
+        return chatRepository.save(chat);
     }
 
     @Override

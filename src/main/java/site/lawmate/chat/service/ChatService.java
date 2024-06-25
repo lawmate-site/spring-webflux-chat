@@ -1,9 +1,11 @@
 package site.lawmate.chat.service;
 
+import reactor.core.publisher.Mono;
+import site.lawmate.chat.domain.Chat;
 import site.lawmate.chat.domain.ChatDto;
 
 public interface ChatService {
-    Object save(ChatDto chatDto);
+    Mono<Chat> save(ChatDto chatDto);
 
     Object findById(String id);
 
