@@ -15,6 +15,13 @@ import site.lawmate.chat.service.ChatService;
 public class ChatController {
     private final ChatService chatService;
 
+    @PostMapping("/temp")
+    @ResponseStatus(HttpStatus.OK)
+    public String temp(@RequestParam String tempQuestion){
+        log.info("질문받은 메세지 : {}", tempQuestion);
+        return "안녕하세요?";
+    }
+
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public Object save(@RequestBody ChatDto chatDto){

@@ -15,8 +15,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Object save(ChatDto chatDto) {
-//        return chatRepository.save(new Chat(chatDto.getUserId(),chatDto.getChatId(),chatDto.getIndex(),chatDto.getQuestion(), chatDto.getAnswer()));
-        return null;
+        return chatRepository.save(new Chat(chatDto.getUserId(),chatDto.getChatId(),chatDto.getIndex(),chatDto.getQuestion(), chatDto.getAnswer()));
     }
 
     @Override
