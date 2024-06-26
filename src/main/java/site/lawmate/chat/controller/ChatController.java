@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import site.lawmate.chat.domain.Chat;
 import site.lawmate.chat.domain.ChatDto;
@@ -17,11 +18,12 @@ import site.lawmate.chat.service.ChatService;
 public class ChatController {
     private final ChatService chatService;
 
+
     @PostMapping("/temp")
     @ResponseStatus(HttpStatus.OK)
     public Mono<String> temp(@RequestBody Mono<String> tempQuestion){
         return tempQuestion.doOnNext(question -> log.info("질문받은 메세지 : {}", question))
-                .map(question -> "안녕하세요?");
+                .map(answer -> "안녕하세요?");
     }
 
     @PostMapping("/save")
@@ -29,6 +31,11 @@ public class ChatController {
     public Mono<Chat> save(@RequestBody Mono<ChatDto> chatDtoMono){
         return chatDtoMono.doOnNext(chatDto -> log.info("컨트롤러단 save : {}", chatDto.getAnswer()))
                 .flatMap(chatService::save);
+    }
+
+    @GetMapping("/createRoom/{userId}")
+    public Mono<Long> createRoom(@PathVariable Long userId) {
+        return chatService.createRoom(userId);
     }
 
     @GetMapping("/{id}")
@@ -51,11 +58,11 @@ public class ChatController {
         return chatService.update(id, chatDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Object delete(@PathVariable("id") String id){
-        log.info("컨트롤러단 id : {}", id);
-        return chatService.delete(id);
+    public Mono<Void> delete(@RequestBody ChatDto chatDto){
+        log.info("컨트롤러단 dto : {}", chatDto);
+        return chatService.deleteByChatDto(chatDto);
     }
 
 }
