@@ -1,9 +1,6 @@
-package site.lawmate.chat.domain;
+package site.lawmate.chat.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
@@ -23,4 +20,7 @@ public class ChatDto {
     private String answer;
     private Integer messageOrder;
     private LocalDateTime chatDate;
+    private String chatName;
+    private LocalDateTime recentChat;
+    private LocalDateTime oldestChatDate;
 }

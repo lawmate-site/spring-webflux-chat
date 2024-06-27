@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import site.lawmate.chat.domain.Chat;
-import site.lawmate.chat.domain.ChatDto;
+import site.lawmate.chat.domain.model.Chat;
+import site.lawmate.chat.domain.dto.ChatDto;
 import site.lawmate.chat.service.ChatService;
 
 @Slf4j
@@ -18,7 +18,7 @@ import site.lawmate.chat.service.ChatService;
 public class ChatController {
     private final ChatService chatService;
 
-
+    //커맨드 (create, update, delete)
     @PostMapping("/temp")
     @ResponseStatus(HttpStatus.OK)
     public Mono<String> temp(@RequestBody Mono<String> tempQuestion){
@@ -26,6 +26,7 @@ public class ChatController {
                 .map(answer -> "안녕하세요?");
     }
 
+    //채팅: 응답 후 저장 (성능 고려)
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Chat> save(@RequestBody Mono<ChatDto> chatDtoMono){
@@ -33,36 +34,45 @@ public class ChatController {
                 .flatMap(chatService::save);
     }
 
-    @GetMapping("/createRoom/{userId}")
-    public Mono<Long> createRoom(@PathVariable Long userId) {
-        return chatService.createRoom(userId);
-    }
-
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Object findById(@PathVariable String id){
-        log.info("컨트롤러단 id : {}", id);
-        return chatService.findById(id);
-    }
-
-    @GetMapping("/all")
-    @ResponseStatus(HttpStatus.OK)
-    public Object findAll(){
-        return chatService.findAll();
-    }
-
-    @PutMapping("/update")
-    @ResponseStatus(HttpStatus.OK)
-    public Object update(@PathVariable("id") String id,@RequestBody ChatDto chatDto){
-        log.info("컨트롤러단 update : {}", chatDto.getAnswer());
-        return chatService.update(id, chatDto);
-    }
-
+    //채팅 삭제
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@RequestBody ChatDto chatDto){
-        log.info("컨트롤러단 dto : {}", chatDto);
-        return chatService.deleteByChatDto(chatDto);
+    public Mono<Void> delete(@RequestBody ChatDto chatRequestDto){
+        log.info("컨트롤러단 dto : {}", chatRequestDto);
+        return chatService.deleteByChatDto(chatRequestDto);
     }
+
+    //쿼리 (read)
+    //채팅 리스트
+    @GetMapping("/user/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<ChatDto> getChatList(@PathVariable Long userId) {
+        return chatService.getChatListByUserId(userId);
+    }
+
+    //새 채팅을 요구한 경우 (새로운 RoomId를 프론트로 보냄)
+    @GetMapping("/create/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Long> getRoomId(@PathVariable Long userId) {
+        return chatService.getRoomId(userId);
+    }
+
+    //기존 채팅 조회 (message-order 걷어낼 예정)
+    @PostMapping("/history/message-order")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<ChatDto> getChatHistoryByMessageOrder(@RequestBody ChatDto chatRequestDto) {
+        return chatService.getChatHistoryByMessageOrder(chatRequestDto.getUserId(), chatRequestDto.getChattingRoomId());
+    }
+
+    //기존 채팅 조회
+    @PostMapping("/history/chat-date")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<ChatDto> getChatHistoryByChatDate(@RequestBody ChatDto chatRequestDto) {
+        return chatService.getChatHistoryByChatDate(chatRequestDto.getUserId(), chatRequestDto.getChattingRoomId());
+    }
+
+
+
+
 
 }

@@ -1,4 +1,4 @@
-package site.lawmate.chat.domain;
+package site.lawmate.chat.domain.model;
 
 import lombok.*;
 import org.bson.types.ObjectId;
