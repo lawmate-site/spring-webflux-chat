@@ -44,14 +44,14 @@ public class ChatController {
 
     //쿼리 (read)
     //채팅 리스트
-    @GetMapping("/user/{userId}")
+    @GetMapping("/list/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public Flux<ChatDto> getChatList(@PathVariable Long userId) {
         return chatService.getChatListByUserId(userId);
     }
 
     //새 채팅을 요구한 경우 (새로운 RoomId를 프론트로 보냄)
-    @GetMapping("/create/{userId}")
+    @GetMapping("/newRoomId/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<Long> getRoomId(@PathVariable Long userId) {
         return chatService.getRoomId(userId);
