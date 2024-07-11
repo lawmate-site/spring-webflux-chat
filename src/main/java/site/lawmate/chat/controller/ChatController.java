@@ -13,7 +13,6 @@ import site.lawmate.chat.service.ChatService;
 @Slf4j
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RequestMapping(path = "/chats")
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
